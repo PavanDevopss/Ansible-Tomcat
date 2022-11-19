@@ -1,0 +1,31 @@
+- hosts: all
+  become: yes
+  gather_facts: yes
+  tasks:
+  - name: create ansible user
+    user:
+     name: ansible
+     create_home: true
+     shell: /bin/bash
+     comment: "Ansible Management Account"
+     expires: -1
+     password: "{{ 'DevOps@2022' | password_hash('sha512','A512') }}"
+  - name: Setting up Sudo Access for Ansible User
+    copy:
+     dest: /etc/sudoers.d/ansible
+     content: 'ansible ALL=(ALL) NOPASSWD: ALL'
+     validate: /usr/sbin/visudo -cf %s
+  - name: Enabled Password Authentication
+    lineinfile:
+     dest=/etc/ssh/sshd_config
+     regexp='^PasswordAuthentication'
+     line="PasswordAuthentication yes"
+     state=present
+     backup=yes
+    notify:
+    - restarting ssh
+  handlers:
+  - name: restarting ssh
+    service:
+      name=sshd
+      state=restarted
