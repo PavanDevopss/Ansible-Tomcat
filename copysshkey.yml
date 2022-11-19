@@ -1,4 +1,3 @@
-
 - hosts: all
   become: yes
   tasks:
@@ -23,11 +22,11 @@
       validate: /usr/sbin/visudo -cf %s
   - name: Disable Password Authentication
     lineinfile:
-      dest=/etc/ssh/sshd_config
-      regexp="^PasswordAuthenication"
-      line="PasswordAuthenication no"
-      state=present
-      backup=yes
+       dest=/etc/ssh/sshd_config
+       regexp='^PasswordAuthenication'
+       line="PasswordAuthenication no"
+       state=present
+       backup=yes
     notify:
       - restart ssh
   handlers:
